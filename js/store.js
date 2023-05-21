@@ -27,19 +27,34 @@ function addAllProducts(allUserProducts) {
 }
 
 function addProductToBasket(productId) {
-    let mainProduct = allProducts.find(function (product) {
-        return productId === product.id
+    let mainProductId = userBasket.filter(function (userProduct) {
+        return userProduct.id === productId
     })
 
-    userBasket.push(mainProduct)
-    addUserProductsToDom(userBasket)
+    if (mainProductId.length === 0) {
+        let mainProduct = allProducts.find(function (product) {
+            return productId === product.id
+        })
+        userBasket.push(mainProduct)
+        addUserProductsToDom(userBasket)
+    } else {
+        let mainProductForCount = userBasket.find(function (product) {
+            return product.id === productId
+        })
+        mainProductForCount.count++
+
+        let productForCountDOM = $.getElementById(mainProductForCount.id)
+
+        productForCountDOM.value = mainProductForCount.count
+    }
+
     calcTotalPrice(userBasket)
 }
 
 function addUserProductsToDom(allUserProducts) {
     UserBasketElem.innerHTML = ''
     allUserProducts.forEach(function (product) {
-        UserBasketElem.insertAdjacentHTML('beforeend', '<div class="cart-row"><div class="cart-item cart-column"><img class="cart-item-image" src="' + product.src + '" width="100" height="100"><span class="cart-item-title">' + product.name + '</span></div><span class="cart-price cart-column">' + product.price + '</span><div class="cart-quantity cart-column"><input class="cart-quantity-input" id="' + product.id + '" type="number" value="1" onchange="changeInputValue(' + product.id + ')"><button class="btn btn-danger" type="button" onclick="removeUserProduct(' + product.id + ')">REMOVE</button></div></div>')
+        UserBasketElem.insertAdjacentHTML('beforeend', '<div class="cart-row"><div class="cart-item cart-column"><img class="cart-item-image" src="' + product.src + '" width="100" height="100"><span class="cart-item-title">' + product.name + '</span></div><span class="cart-price cart-column">' + '$' + product.price + '</span><div class="cart-quantity cart-column"><input class="cart-quantity-input" id="' + product.id + '" type="number" value="' + product.count + '" onchange="changeInputValue(' + product.id + ')"><button class="btn btn-danger" type="button" onclick="removeUserProduct(' + product.id + ')">REMOVE</button></div></div>')
     })
 }
 
